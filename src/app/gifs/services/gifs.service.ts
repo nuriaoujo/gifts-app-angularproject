@@ -1,3 +1,4 @@
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
 
@@ -7,18 +8,30 @@ export class GifsService {
 
     private _tagsHistory: string[] = [];
     private apiKey: string = 'Syt5UGQm0OKuhXBDm7eK0ccfGN4VIcjA';
+    private serviceUrl: string = 'https://api.giphy.com/v1/gifs';
 
-    constructor() { }
+    constructor(private http: HttpClient) { }
 
     //! Para evitar irrumpir esa referencia de JS
     get tagsHistory() {
         return [...this._tagsHistory];
     }
 
-    async searchTag(tag: string): Promise<void> {
+    searchTag(tag: string): void {
         if (tag.length === 0) return;
         this.organizeHistory(tag);
 
+        const params = new HttpParams()
+            .set('api_key', this.apiKey)
+            .set('limit', 10)
+            .set('q', tag)
+
+        this.http.get(`${ this.serviceUrl }/search`, { params })
+            .subscribe( resp => {
+                console.log(resp);
+            })
+
+        //! Se realiza con private httpClient
         // const resp = await fetch('https://api.giphy.com/v1/gifs/search?api_key=Syt5UGQm0OKuhXBDm7eK0ccfGN4VIcjA&q=valorant&limit=10');
         // const data = await resp.json();
 
