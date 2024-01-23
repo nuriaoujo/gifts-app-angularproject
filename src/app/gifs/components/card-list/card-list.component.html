@@ -1,19 +1,9 @@
 <div class="row">
 
-    <!--? md-3 significa que en ventanas medianas se divida en 3 columnas -->
-    <!--? ms-6 significa que en ventanas pequeñas se divida en 6 columnas -->
-    <div class="col-md-3 col-ms-6">
-        <div class="card mb-2 text-center bg-dark">
-
-            <!-- TODO: Crear imagen -->
-
-            <div class="card-body text-white">
-                <p class="card-text">
-                    Hola mundo
-                </p>
-            </div>
-        </div>
-    </div>
-
+    <gifs-card
+        *ngFor="let gif of gifs"
+        [gif]="gif"
+        class="col-md-3 col-ms-6">
+    </gifs-card>
     
 </div>

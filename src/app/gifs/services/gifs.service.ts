@@ -13,11 +13,28 @@ export class GifsService {
     private apiKey: string = 'Syt5UGQm0OKuhXBDm7eK0ccfGN4VIcjA';
     private serviceUrl: string = 'https://api.giphy.com/v1/gifs';
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {
+        this.loadLocalStorage();
+        console.log('Gifs Service Ready');
+    }
 
     //! Para evitar irrumpir esa referencia de JS
     get tagsHistory() {
         return [...this._tagsHistory];
+    }
+
+    private saveLocalStorage(): void {
+        localStorage.setItem('history', JSON.stringify(this._tagsHistory));
+    }
+
+    private loadLocalStorage(): void {
+        if (!localStorage.getItem('history')) return;
+
+        //? La exclamación es para asegurarle a visual que NO es nulo
+        this._tagsHistory = JSON.parse(localStorage.getItem('history')!);
+
+        if (this._tagsHistory.length === 0) return;
+        this.searchTag(this._tagsHistory[0]);
     }
 
     searchTag(tag: string): void {
@@ -29,11 +46,11 @@ export class GifsService {
             .set('limit', 10)
             .set('q', tag)
 
-        this.http.get<SearchResponse>(`${ this.serviceUrl }/search`, { params })
-            .subscribe( resp => {
-                
+        this.http.get<SearchResponse>(`${this.serviceUrl}/search`, { params })
+            .subscribe(resp => {
+
                 this.gifList = resp.data;
-                console.log({ gifs: this.gifList });
+                // console.log({ gifs: this.gifList });
             })
 
         //! Se realiza con private httpClient
@@ -47,11 +64,12 @@ export class GifsService {
         tag = tag.toLowerCase();
 
         if (this._tagsHistory.includes(tag)) {
-            this._tagsHistory = this._tagsHistory.filter( (oldTag) => oldTag !== tag)
+            this._tagsHistory = this._tagsHistory.filter((oldTag) => oldTag !== tag)
         }
 
         this._tagsHistory.unshift(tag);
-        this._tagsHistory = this._tagsHistory.splice(0,10);
+        this._tagsHistory = this._tagsHistory.splice(0, 10);
+        this.saveLocalStorage();
     }
 
 }
