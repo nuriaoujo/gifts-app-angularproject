@@ -1,10 +1,13 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Gif, SearchResponse } from "../interfaces/gifs.interfaces";
 
 
 // El provideIn: 'root' sirve para proveer el servicio para poder alcanzar todos los componentes sin tener que importar/exportar
 @Injectable({ providedIn: 'root' })
 export class GifsService {
+
+    public gifList: Gif[] = [];
 
     private _tagsHistory: string[] = [];
     private apiKey: string = 'Syt5UGQm0OKuhXBDm7eK0ccfGN4VIcjA';
@@ -26,9 +29,11 @@ export class GifsService {
             .set('limit', 10)
             .set('q', tag)
 
-        this.http.get(`${ this.serviceUrl }/search`, { params })
+        this.http.get<SearchResponse>(`${ this.serviceUrl }/search`, { params })
             .subscribe( resp => {
-                console.log(resp);
+                
+                this.gifList = resp.data;
+                console.log({ gifs: this.gifList });
             })
 
         //! Se realiza con private httpClient
